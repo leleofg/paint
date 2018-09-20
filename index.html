@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>PAINT - CG</title>
+</head>
+<style>
+    #game-surface {
+        display: block;
+    }
+</style>
+<body id='body' style="width: 2000px; height: 2000px;">
+    <button onclick="InitDemo();">Renderizar Triângulo</button>
+    <button onclick="destroyTrianglo()" >Apagar triângulo</button>
+
+    <!-- <div id="tools" style="width: 100px; height: 40px; margin-top: 10px;">
+        <div style="width: 20px; height: 20px; background-color: blue; float: left; margin-left: 5px;"></div>
+        <div style="width: 20px; height: 20px; background-color: red; float: left; margin-left: 5px;"></div>
+        <div style="width: 20px; height: 20px; background-color: green; float: left; margin-left: 5px;"></div>
+    </div> -->
+
+    <canvas id="game-surface" class="draggable"></canvas>
+    
+    <script src="interact.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
