@@ -1,1 +1,3 @@
-Desenvolver um PAINT com WebGL para a disciplina de Computação Gráfica - UNICAP.
+# Paint - OpenGL(WebGL)
+
+![alt text](https://github.com/leleofg/paint/blob/master/paint.png)
