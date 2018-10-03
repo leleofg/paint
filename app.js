@@ -1,50 +1,6 @@
-// target elements with the "draggable" class
-interact('.draggable')
-  .draggable({
-    // enable inertial throwing
-    inertia: true,
-    // keep the element within the area of it's parent
-    restrict: {
-      restriction: "parent",
-      endOnly: true,
-      elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
-    },
-    // enable autoScroll
-    autoScroll: true,
-
-    // call this function on every dragmove event
-    onmove: dragMoveListener,
-    // call this function on every dragend event
-    onend: function (event) {
-      var textEl = event.target.querySelector('p');
-
-      textEl && (textEl.textContent =
-        'moved a distance of '
-        + (Math.sqrt(Math.pow(event.pageX - event.x0, 2) +
-                     Math.pow(event.pageY - event.y0, 2) | 0))
-            .toFixed(2) + 'px');
-    }
-  });
-
-  function dragMoveListener (event) {
-    var target = event.target,
-        // keep the dragged position in the data-x/data-y attributes
-        x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-        y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-
-    // translate the element
-    target.style.webkitTransform =
-    target.style.transform =
-      'translate(' + x + 'px, ' + y + 'px)';
-
-    // update the posiion attributes
-    target.setAttribute('data-x', x);
-    target.setAttribute('data-y', y);
-  }
-
-  // this is used later in the resizing and gesture demos
-  window.dragMoveListener = dragMoveListener;
-
+function salvar() {
+    window.print();
+}
 
 var vertexShaderText = 
 [
@@ -55,6 +11,7 @@ var vertexShaderText =
 'void main()',
 '{',
 '   gl_Position = vec4(vertPosition, 0.0, 1.0);',
+'',
 '}'
 ].join('\n');
 
@@ -68,21 +25,30 @@ var fragmentShaderText =
 '}'
 ].join('\n');
 
-function destroyTrianglo() {
-    var element = document.getElementById('game-surface');
+function destroy(id) {
+
+    if(id == 'all') {
+        var element = document.getElementById('canvas-triangle');
+        element.parentNode.removeChild(element);
+
+        var element = document.getElementById('canvas-square');
+        element.parentNode.removeChild(element);
+    }
+
+    var element = document.getElementById(id);
     element.parentNode.removeChild(element);
 }
 
-var InitDemo = function() {
+function createTriangle() {
 
-    // var canv = document.createElement('canvas');
-    // canv.id = 'game-surface';
-    // canv.className = 'draggable';
+    var canv = document.createElement('canvas');
+    canv.id = 'canvas-triangle';
+    canv.className = 'draggable';
 
-    // document.body.appendChild(canv);
-    // document.getElementById('body').appendChild(canv);
+    document.body.appendChild(canv);
+    document.getElementById('body').appendChild(canv);
 
-    var canvas = document.getElementById('game-surface');
+    var canvas = document.getElementById('canvas-triangle');
     canvas.style.display = 'block';
     var gl = canvas.getContext('webgl');
 
@@ -90,45 +56,21 @@ var InitDemo = function() {
         alert('Seu browser não suporta WebGL');
     }
 
-    // gl.clearColor(1.0, 1.0, 1.0, 1.0); //coloca cor de fundo!!
-    // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
     var vertexShader = gl.createShader(gl.VERTEX_SHADER);
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 
     gl.shaderSource(vertexShader, vertexShaderText);
     gl.shaderSource(fragmentShader, fragmentShaderText);
-
     gl.compileShader(vertexShader);
-    if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-        console.error('ERROR compiling vertex shader!', gl.getShaderInfoLog(vertexShader));
-        return;
-    }
-
     gl.compileShader(fragmentShader);
-    if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-        console.error('ERROR compiling fragment shader!', gl.getShaderInfoLog(fragmentShader));
-        return;
-    }
 
     var program = gl.createProgram();
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
     gl.linkProgram(program);
-
-    if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        console.error('ERROR linking program!', gl.getProgramInfo(program));
-        return;
-    }
-
     gl.validateProgram(program);
-    if(!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
-        console.error('ERROR validating program!', gl.getProgramInfo(program));
-        return;
-    }
 
     var triangleVertices = [
-        //X,Y
         0.0, 1,
         -1, -1,
         1, -1
@@ -153,3 +95,111 @@ var InitDemo = function() {
     gl.useProgram(program);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 };
+
+var canvas;
+var gl;
+var squareVerticesBuffer;
+var shaderProgram;
+var vertexPositionAttribute;
+
+function createSquare() {
+
+    var canv = document.createElement('canvas');
+    canv.id = 'canvas-square';
+    canv.className = 'draggable';
+
+    document.body.appendChild(canv);
+    document.getElementById('body').appendChild(canv);
+
+    canvas = document.getElementById("canvas-square");
+    canvas.style.display = 'block';
+    gl = canvas.getContext("webgl");
+    if(!gl) {
+        alert("Sem WebGL");
+        return;
+    }
+
+    gl.clearDepth(1.0);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+
+    initShaders();
+    initBuffers();
+    drawScene();
+}
+
+function initBuffers() {
+    squareVerticesBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, squareVerticesBuffer);
+
+    var vertices = [
+        1, 4, 0.0,
+        -4, 4, 0.0,
+        1, -4, 0.0,
+        -4, -4, 0.0
+    ];
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+}
+
+function drawScene() {
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, squareVerticesBuffer);
+    gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+function initShaders() {
+    var fragmentShader = getShader(gl, "shader-fs");
+    var vertexShader = getShader(gl, "shader-vs");
+
+    shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+
+    if(!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        alert('Não pode inicializar o programa de shader');
+    }
+
+    gl.useProgram(shaderProgram);
+
+    vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    gl.enableVertexAttribArray(vertexPositionAttribute);
+}
+
+function getShader (gl, id) {
+    var shaderScript = document.getElementById(id);
+
+    if(!shaderScript) {
+        alert("Sem Shader");
+        return null;
+    }
+
+    var theSource = "";
+    var currentChild = shaderScript.firstChild;
+
+    while(currentChild) {
+        if(currentChild.nodeType == 3) {
+            theSource += currentChild.textContent;
+        }
+
+        currentChild = currentChild.nextSibling;
+    }
+
+    var shader;
+
+    if(shaderScript.type == "x-shader/x-fragment") {
+        shader = gl.createShader(gl.FRAGMENT_SHADER);
+    } else if (shaderScript.type === "x-shader/x-vertex"){
+        shader = gl.createShader(gl.VERTEX_SHADER);
+    } else {
+        return null;
+    }
+
+    gl.shaderSource(shader, theSource);
+    gl.compileShader(shader);
+
+    return shader;
+}

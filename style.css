@@ -1,0 +1,44 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#controls {
+    color: #663977;
+    height: 100px;
+    background-color: #DCE6F4;
+    border-bottom: 2px solid #C5CFDF;
+}
+
+.container {
+    float: left;
+    position: relative;
+    margin: 10px 0 0 20px;
+    height: 80px;
+    width: 130px;
+    border-right: 1px solid #A5B8D0;
+}
+
+input[type="button"]{
+    width: 86px;
+}
+
+input[type="number"]{
+    width: 40px;
+    position: absolute;
+    right: 20px;
+    text-align: center;
+}
+
+.name-box {
+    font-size: 14px;
+    position: absolute;
+    color: #9883A9;
+}
+
+.triangle {
+    position: absolute;
+    font-size: 12px;
+    font-family: Arial;
+    color: #9883A9;
+}

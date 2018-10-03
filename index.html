@@ -4,26 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>PAINT - CG</title>
+    <title>Paint</title>
+    <link rel="stylesheet" href="style.css">
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+        void main(void) {
+            gl_FragColor = vec4(0,0,1,1);
+        }
+    </script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+        attribute vec3 aVertexPosition;
+
+        void main(void) {
+
+            gl_Position = vec4(aVertexPosition, 1.0);
+        }
+    </script>
 </head>
 <style>
     #game-surface {
         display: block;
     }
 </style>
-<body id='body' style="width: 2000px; height: 2000px;">
-    <button onclick="InitDemo();">Renderizar Triângulo</button>
-    <button onclick="destroyTrianglo()" >Apagar triângulo</button>
+<body id='body' style="width: 100%; height: 600px; background-color: #D2DBE9 !important;">
+    <div id="controls">
+        <div class="container">
+            <p><input type="button" onclick="destroy('all')" value="Limpar"></p>
+            <input type="button" value="Salvar" onclick="salvar()">
+        </div>
+        <div class="container">
+            <p>
+                <label>Largura</label>
+                <input type="number" value="800">
+            </p>
+            <p>
+                <label>Altura</label>
+                <input type="number" value="480">
+            </p>
+        </div>
+        <div class="container">
+            <span class="name-box">Triângulo</span>
+            <p><input type="button" onclick="createTriangle()" value="Criar"></p>
+            <p><input type="button" onclick="destroy('canvas-triangle')" value="Excluir"></p>
+        </div>
+        <div class="container">
+            <span class="name-box">Quadrilátero</span>
+            <p><input type="button" onclick="createSquare()" value="Criar"></p>
+            <p><input type="button" onclick="destroy('canvas-square')" value="Excluir"></p>
+        </div>
+        <div class="container">
+            <span class="name-box">Polígonos</span>
+            <p><input type="button" onclick="createPoligono()" value="Criar"></p>
+            <p><input type="button" onclick="destroy('canvas-poligono')" value="Excluir"></p>
+        </div>
+    </div>
 
-    <!-- <div id="tools" style="width: 100px; height: 40px; margin-top: 10px;">
-        <div style="width: 20px; height: 20px; background-color: blue; float: left; margin-left: 5px;"></div>
-        <div style="width: 20px; height: 20px; background-color: red; float: left; margin-left: 5px;"></div>
-        <div style="width: 20px; height: 20px; background-color: green; float: left; margin-left: 5px;"></div>
-    </div> -->
-
-    <canvas id="game-surface" class="draggable"></canvas>
-    
     <script src="interact.min.js"></script>
+    <script src="init.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
